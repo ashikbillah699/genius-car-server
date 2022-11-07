@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
+// Module - 69 - 7 baki ache, kora lagbe
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.rhwxyri.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -21,6 +23,13 @@ async function run() {
     try {
         const servicesCollection = client.db('geniuscar').collection('services');
         const orderCollection = client.db('geniuscar').collection('order');
+
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            console.log(user);
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+            res.send({ token })
+        })
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
